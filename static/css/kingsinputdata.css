@@ -1,0 +1,67 @@
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f9; /* Match other pages */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.form-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    border: 1px solid #6a133b;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 350px; /* Or adjust as needed */
+    background-color: white;
+}
+form h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.form-row label {
+    flex-basis: 30%; /* Allocate 30% width to labels */
+    text-align: right;
+    margin-right: 1rem;
+}
+.form-row .form-input {
+    flex-grow: 1; /* Allow input to take remaining space */
+    padding: 0.6rem; /* Increase padding for height */
+    border-radius: 7px; /* Make it round */
+    border: 1px solid #ccc; /* Define border */
+}
+form button {
+    width: 100%;
+    padding: 0.7rem;
+    margin-top: 1.5rem;
+    border-radius: 7px; /* Make it rounded like the inputs */
+    border: none;
+    background-color: #6a133b;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+.view-data-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #6a133b;
+    text-decoration: none;
+    font-size: 1rem;
+}
+.view-data-link:hover {
+    text-decoration: underline;
+}

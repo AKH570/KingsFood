@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archived Sales Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/kingshowdata.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    {% include 'kings/kingsnavbar.html' %}
+    <h1>Previous Months Data</h1>
+    <!-- <h2>Monthly Summaries</h2> -->
+    <div class="main-container" style="justify-content: center;">
+        <div class="report-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total FMP Sale (Tk)</th>
+                        <th>Total Foodpanda Sale (Tk)</th>
+                        <th>Grand Total (Tk)</th>
+                        <th>Net Total (Tk)</th>
+                        <th>Average Sale (Tk)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for archive in archived_data %}
+                    <tr>
+                        <td>{{ archive.month|date:"F Y" }}</td>
+                        <td>{{ archive.total_fmp_sale|floatformat:2 }}</td>
+                        <td>{{ archive.total_foodpanda_sale|floatformat:2 }}</td>
+                        <td>{{ archive.grand_total_sale|floatformat:2 }}</td>
+                        <td>{{ archive.net_total_sale|floatformat:2 }}</td>
+                        <td>{{ archive.average_daily_sale|floatformat:2 }} <a href="{% url 'month_rpt' archive.id %}" style="margin-left: 15px; font-size: 1.3rem;" title="View Details"><i class="fa-solid fa-circle-info"></i></a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No archived data found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

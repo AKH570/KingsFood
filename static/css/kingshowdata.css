@@ -1,0 +1,172 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 2rem;
+    background-color: #f4f4f9;
+    color: #333;
+}
+.main-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+h1 {
+    text-align: center;
+    color: #a71b68;
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+h2 {
+    text-align: center;
+    color: #ee4e99; /* Muted purple to complement the title */
+    font-weight: 400; /* Lighter than bold */
+    font-style: regular;
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+.summary-section {
+    flex: 1.2;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.summary-section h3 {
+    margin-top: 0;
+    color: #a71b68;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+     align-items: center;
+    padding: 0.8rem 0;
+    font-size: 1rem;
+    border-bottom: 1px solid #e7d7d7;
+}
+.summary-label::after {
+    content: ":";
+    margin-right: 10px; /* Adjust spacing between colon and value */
+}
+.summary-value {
+    text-align: right;
+}
+.summary-item.total {
+    font-weight: bold;
+    border-top: none; /* Remove top border */
+    border-bottom: none; /* Remove bottom border */
+    margin-top: 1rem;
+    color: #333;
+    border-bottom: 1px solid #e7d7d7;
+}
+.report-section {
+    flex: 2.5;
+    overflow-x: auto; /* Allow horizontal scrolling on small screens */
+}
+table {
+    
+    width: 95%;
+    margin: 0;
+    border-collapse: collapse;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: white;
+    border: 1px solid #ddd; /* Add a border around the table */
+}
+th, td {
+    padding: 10px 8px;
+    text-align: left;
+    border: 1px solid #ddd; /* Add borders to all sides of cells */
+    font-size: 0.9rem; /* Reduce font size for table cells */
+}
+thead th {
+    background-color: #f95ca5;
+    color: white;
+    font-weight: bold;
+}
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+tbody tr:hover {
+    background-color: #e9dffc;
+}
+.numeric-col {
+    text-align: center;
+    width: 100px;
+    /* Add some padding to prevent text from touching the cell edge */
+    padding-right: 15px; 
+}
+.date-col {
+    white-space: nowrap;
+    width: 90px; /* Give it a slightly smaller fixed width */
+    text-align: left;
+}
+.navigation-links {
+    max-width: 1400px; /* Match main container width */
+    margin: 2rem auto; /* Center the container and handle top/bottom margin */
+    text-align: left; /* Align content to the left */
+}
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f95ca5;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.btn-back:hover {
+    background-color: #501ab6;
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 992px) {
+    .main-container {
+        flex-direction: column;
+    }
+    body {
+        margin: 1rem;
+    }
+}
+
+.comparison-section {
+    border-top: 1px solid #eee;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+}
+
+.comparison-section h4 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #a71b68;
+    font-family: 'Poppins', sans-serif;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    grid-template-rows: auto auto; /* 2 rows with automatic height */
+    gap: 0.5rem; /* Space between rows */
+    text-align: center;
+}
+
+.comparison-month {
+    font-weight: 600;
+    color: #333; /* Set color to black/dark gray */
+    font-size: 1.1rem;
+    border-bottom: 1px solid #eee; /* Add a light horizontal line */
+    padding-bottom: 0.5rem; /* Add some space between the text and the line */
+    margin-bottom: 0.5rem; /* Add space between the line and the value below */
+}
+
+.comparison-value {
+    font-size: 1.1rem;
+    color: #333; /* Set color to black/dark gray */
+    font-weight: bold;
+}

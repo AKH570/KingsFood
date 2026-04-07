@@ -1,0 +1,260 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/kingshowdata.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+</head>
+<body>
+    {% include 'kings/kingsnavbar.html' %}
+    <h1>King's Sales Report</h1>
+    <h2>For {{ report_date|date:"F Y" }}</h2>
+    <div class="main-container">
+        <div class="summary-section">
+            <h3>Sales Overview</h3>
+            <div class="summary-item">
+                <span class="summary-label">Total FMP Sale</span>
+                <span class="summary-value">{{ total_fmp_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Total Foodpanda Sale</span>
+                <span class="summary-value">{{ total_foodpanda_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Foodpanda Net (After 20.22%)</span>
+                <span class="summary-value">{{ foodpanda_net_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Average Daily Sale</span>
+                <span class="summary-value">{{ average_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item total">
+                <span class="summary-label">Grand Total</span>
+                <span class="summary-value">{{ grand_total_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item total">
+                <span class="summary-label">Net Total</span>
+                <span class="summary-value">{{ net_total_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Last Updated</span>
+                <span class="summary-value">{{ last_updated_date|date:"d-M-Y"|default:"N/A" }}</span>
+            </div>
+
+            <!-- Sales Comparison Section -->
+            <div class="sales-comparison">
+                <h3>Daily Sales Comparison</h3>
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Sales</th>
+                    </tr>
+                    <tr>
+                        <td>Current Day ({{ current_day_sales.date|date:"Y-m-d" }})</td>
+                        <td>{{ current_day_sales.total_sale|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Previous Month ({{ prev_month_sales.date|date:"Y-m-d" }})</td>
+                        <td>{{ prev_month_sales.total_sale|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Difference</td>
+                        <td>{{ current_day_sales.total_sale|sub:prev_month_sales.total_sale|floatformat:2 }}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3 style="text-align: center;">Monthly Average Sale</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div style="margin-top: 2rem;">
+                <h3 style="text-align: center;">Monthly Total Sales</h3>
+                <canvas id="monthlyTotalsChart"></canvas>
+            </div>
+        </div>
+        <div class="report-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="date-col">Entry Date</th>
+                        <th class="numeric-col">FMP Sale</th>
+                        <th class="numeric-col">Food Panda Sale</th>
+                        <th class="numeric-col">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in showSaleData %}
+                    <tr>
+                        <td class="date-col">{{ sale.create_date|date:"d-M" }}</td>
+                        <td class="numeric-col">{{ sale.FMP_sale|floatformat:2 }}</td>
+                        <td class="numeric-col">{{ sale.foodpanda|floatformat:2 }}</td>
+                        <td class="numeric-col">{{ sale.total_sale|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Register the datalabels plugin with Chart.js
+            Chart.register(ChartDataLabels);
+
+            const labels = {{ chart_labels|safe }};
+            const data = {{ chart_data|safe }};
+
+            // Define a palette of colors for the chart bars
+            const colorPalette = [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(231, 76, 60, 0.6)',
+                'rgba(46, 204, 113, 0.6)',
+                'rgba(52, 152, 219, 0.6)',
+                'rgba(142, 68, 173, 0.6)',
+                'rgba(241, 196, 15, 0.6)',
+                'rgba(26, 188, 156, 0.6)'
+            ];
+
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Average Daily Sale',
+                        data: data,
+                        backgroundColor: colorPalette,
+                        barPercentage: 0.2,
+                        borderColor: colorPalette.map(color => color.replace('0.6', '1')), // Create solid border colors
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            ticks: {
+                                display: false // Hides the y-axis labels
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: false // Disable tooltips since we have data labels
+                        },
+                        legend: {
+                            display: false // Hides the legend
+                        },
+                        datalabels: {
+                            // Rotate labels on smaller screens to prevent overlap
+                            rotation: function(context) {
+                                return context.chart.width < 500 ? -90 : 0;
+                            },
+                            // Adjust alignment and anchor based on rotation
+                            align: function(context) { // 'end' places the label to the right of the bar's top
+                                return context.chart.width < 500 ? 'end' : 'top';
+                            },
+                            anchor: 'end',
+                            formatter: (value) => Math.round(value),
+                            // Adjust offset for rotated labels
+                            offset: function(context) {
+                                return context.chart.width < 500 ? 2 : 4;
+                            },
+                            color: '#555',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 30 // Add padding to the top of the chart area for the labels
+                        }
+                    }
+                }
+            });
+
+            // --- Monthly Totals Chart ---
+            const monthlyTotalsCtx = document.getElementById('monthlyTotalsChart').getContext('2d');
+            const monthlyTotalsChart = new Chart(monthlyTotalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels, // Reuse labels from the first chart
+                    datasets: [
+                        {
+                            label: 'Grand Total Sale',
+                            data: {{ monthly_grand_total_data|safe }},
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Foodpanda Sale',
+                            data: {{ monthly_foodpanda_total_data|safe }},
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString(); // Format y-axis labels
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true },
+                        datalabels: {
+                            display: true,
+                            rotation: -90, // Rotate labels to be vertical
+                            align: 'end', // Aligns the label to the top of its bounding box
+                            anchor: 'end',  // Anchors the label to the top of the bar
+                            formatter: (value) => {
+                                if (value === 0) {
+                                    return '';
+                                }
+                                // Format large numbers to be more readable (e.g., 1.96M, 1.5k)
+                                // Using 2 decimal places for millions to avoid aggressive rounding.
+                                if (value >= 1000000) {
+                                    return (value / 1000000).toFixed(2) + 'M';
+                                }
+                                if (value >= 1000) {
+                                    return (value / 1000).toFixed(1) + 'k';
+                                }
+                                return Math.round(value); // Show full number for values < 1000
+                            },
+                            font: {
+                                weight: 'bold'
+                            },
+                            color: '#444'
+                        }
+                    }
+                },
+                layout: {
+                    padding: {
+                        top: 50 // Increase padding to ensure labels have enough space
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

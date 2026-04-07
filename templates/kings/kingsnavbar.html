@@ -1,0 +1,42 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/kingsnavbar.css' %}">
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a href="{% url 'dashboard' %}">King's Sales</a>
+    </div>
+    <!-- Hamburger menu button, only visible on mobile -->
+    <!-- <button class="navbar-toggler" id="navbar-toggler" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+    </button> -->
+    <!-- This div will be collapsed on mobile -->
+    <div class="navbar-collapse" id="navbar-links-container">
+        <ul class="navbar-links">
+            <li><a href="{% url 'dashboard' %}">ENTRY PAGE</a></li>
+            <li><a href="{% url 'showdata' %}">CURRENT MONTH</a></li>
+            <li><a href="{% url 'show_archive' %}">ARCHIVE</a></li>
+            <li><a href="{% url 'psd' %}">PSD</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">LOGOUT</a></li>
+            {% else %}
+            <li>
+                <a href="{% url 'login' %}">LOGIN</a>
+               
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<!-- Simple script to toggle the menu on click -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggler = document.getElementById('navbar-toggler');
+    const navLinksContainer = document.getElementById('navbar-links-container');
+    toggler.addEventListener('click', function() {
+        navLinksContainer.classList.toggle('active');
+    });
+});
+</script>

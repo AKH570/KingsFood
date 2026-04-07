@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - King's Sales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/kingsinputdata.css' %}">
+</head>
+<body>
+    <main class="form-container" style="margin-top: 100px;">
+        <form method="post">
+            <h1>Login</h1>
+            {% csrf_token %}
+            {% if form.errors %}
+                <p style="color: red; text-align: center;">Invalid username or password.</p>
+            {% endif %}
+            <div class="form-row">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+    </main>
+</body>
+</html>
