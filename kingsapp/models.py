@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class saleData(models.Model):
+class kingsSale(models.Model):
     entity = models.CharField(max_length=100)
     FMP_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     foodpanda = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -16,10 +16,10 @@ class saleData(models.Model):
         return self.entity
 
     class Meta:
-        verbose_name = 'Sale Data'
-        verbose_name_plural = 'Sales Data'
+        verbose_name = 'Kings Sale'
+        verbose_name_plural = 'Kings Sale'
 
-class ArchivedSaleSummary(models.Model):
+class kingsArchvSummary(models.Model):
     month = models.DateField(unique=True)
     total_fmp_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_foodpanda_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -32,9 +32,9 @@ class ArchivedSaleSummary(models.Model):
         return self.month.strftime('%B %Y')
 
     class Meta:
-        verbose_name = 'Archived Sale Summary'
-        verbose_name_plural = 'Archived Sale Summaries'
-class kingsProfitData(models.Model):
+        verbose_name = 'Kings Archived Summary'
+        verbose_name_plural = 'Kings Archived Summary'
+class kingsProfit(models.Model):
     month = models.DateField(unique=True)
     remarks = models.CharField(max_length=200, blank=True, null=True)
     totalProfitAmount   = models.DecimalField(max_digits=10, decimal_places=2, blank=True,null=True)
@@ -57,7 +57,5 @@ class kingsProfitData(models.Model):
         return self.month.strftime('%B %Y')
 
     class Meta:
-        verbose_name = 'Kings Profit Data'
-        verbose_name_plural = 'Kings Profit Data'
-
-
+        verbose_name = 'Kings Profit'
+        verbose_name_plural = 'Kings Profit'

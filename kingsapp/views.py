@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import SaleDataForm, KingsProfitDataForm
 from django.db.models import Sum, Count, Avg, F
 from django.utils import timezone
-from .models import saleData, ArchivedSaleSummary, kingsProfitData
+from .models import kingsSale, kingsArchvSummary, kingsProfit
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from django.db.models.functions import TruncMonth
@@ -18,12 +18,17 @@ import json
 # Create your views here.
 
 @login_required(login_url='login')
+def welcome(request):
+    """Displays a welcome page after successful login."""
+    return render(request, 'kings/welcome.html')
+
+@login_required(login_url='login')
 def dashBoard(request):
 	if request.method == 'POST':
 		form = SaleDataForm(request.POST)
 		if form.is_valid():
 			sale_instance = form.save()
-			return redirect('dashboard')
+			return redirect('entrypage')
 		else:
 			print(form.errors)
 	else:
@@ -36,7 +41,7 @@ def get_day_sales(target_date):
     """
     Helper function to get sales for a specific day
     """
-    day_sales = saleData.objects.filter(
+    day_sales = kingsSale.objects.filter(
         create_date=target_date
     ).aggregate(
         total_sale=Sum(F('FMP_sale') + F('foodpanda'))
@@ -63,12 +68,12 @@ def get_previous_month_day(current_date):
 def showData(request):
 	today = datetime.today()
 	# Get the most recent sale entry to determine the report date
-	last_entry = saleData.objects.order_by('-create_date').first()
+	last_entry = kingsSale.objects.order_by('-create_date').first()
 
 	# Use the create_date from the last entry, or today's date if there are no sales
 	report_date = last_entry.create_date if last_entry else today
 	# Filter for records in the current month and year
-	monthly_sales = saleData.objects.filter(
+	monthly_sales = kingsSale.objects.filter(
 		create_date__year=report_date.year,
 		create_date__month=report_date.month
 	)
@@ -100,11 +105,11 @@ def showData(request):
 		average_sale = grand_total / sale_count
 
 	# Get the most recent sale entry to find the last updated date
-	last_entry = saleData.objects.order_by('-create_date').first()
+	last_entry = kingsSale.objects.order_by('-create_date').first()
 	last_updated_date = last_entry.create_date if last_entry else None
 
 	# --- Monthly Average Sale for Chart ---
-	monthly_chart_data = saleData.objects.filter(
+	monthly_chart_data = kingsSale.objects.filter(
 		create_date__year=today.year
 	).annotate(
 		month=TruncMonth('create_date')
@@ -132,7 +137,7 @@ def showData(request):
 		chart_data.append(sales_by_month.get(month_num, 0))
 
 	# --- Data for Monthly Grand Total and Foodpanda Total Chart ---
-	monthly_totals_raw = saleData.objects.filter(
+	monthly_totals_raw = kingsSale.objects.filter(
 		create_date__year=today.year
 	).annotate(
 		month=TruncMonth('create_date')
@@ -191,7 +196,7 @@ def showData(request):
 def showArchive(request):
     """Displays the archived monthly sales summaries."""
     # Order by month to ensure the chart is chronological
-    archived_data = ArchivedSaleSummary.objects.order_by('month')
+    archived_data = kingsArchvSummary.objects.order_by('month')
 
     # Prepare data for Chart.js
     chart_labels = [item.month.strftime('%b %Y') for item in archived_data]
@@ -209,7 +214,7 @@ def showArchive(request):
 @login_required(login_url='login')
 def profitDistribution(request):
     # Get all kings profit data, ordered by month in descending order
-    kings_profit_data = kingsProfitData.objects.order_by('-month')
+    kings_profit_data = kingsProfit.objects.order_by('-month')
     
     if request.method == 'POST':
         form = KingsProfitDataForm(request.POST)
@@ -223,7 +228,7 @@ def profitDistribution(request):
                 month = form.cleaned_data['month']
                 print(f'show the month{month}')
                 # print(f"Checking for existing entry for month: {month}")
-                if kingsProfitData.objects.filter(month__year=month.year, month__month=month.month).exists():
+                if kingsProfit.objects.filter(month__year=month.year, month__month=month.month).exists():
                     messages.error(request, f'An entry for {month.strftime("%B %Y")} already exists.')
                 else:
                     form.save()
@@ -248,8 +253,8 @@ def profitDistribution(request):
 # ====== Month view report
 @login_required(login_url='login')
 def month_view_sale(request, pk):
-    arcv_month = get_object_or_404(ArchivedSaleSummary, pk=pk)
-    daily_sales = saleData.objects.filter(
+    arcv_month = get_object_or_404(kingsArchvSummary, pk=pk)
+    daily_sales = kingsSale.objects.filter(
         create_date__year=arcv_month.month.year,
         create_date__month=arcv_month.month.month
     ).order_by('create_date')

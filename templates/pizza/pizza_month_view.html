@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Sales - {{ archive.month|date:"F Y" }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/kingshowdata.css' %}">
+</head>
+<body>
+    {% include 'pizza/pizzanavbar.html' %}
+    
+    <h1>Daily Sales Breakdown</h1>
+    <h2>{{ archive.month|date:"F Y" }}</h2>
+
+    <div class="main-container" style="justify-content: center;">
+        <div class="report-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>FMP Sale</th>
+                        <th>Foodpanda Sale</th>
+                        <th>Total Sale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in daily_sales %}
+                    <tr>
+                        <td>{{ sale.create_date|date:"d M Y" }}</td>
+                        <td>{{ sale.FMP_sale|floatformat:2 }}</td>
+                        <td>{{ sale.foodpanda|floatformat:2 }}</td>
+                        <td>{{ sale.total_sale|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No sales data found for this month.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background-color: #f2f2f2;">
+                        <td style="text-align: right;">Monthly Total:</td>
+                        <td>{{ archive.total_fmp_sale|floatformat:2 }}</td>
+                        <td>{{ archive.total_foodpanda_sale|floatformat:2 }}</td>
+                        <td>{{ archive.grand_total_sale|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="{% url 'show_archive' %}" style="text-decoration: none; color: #333; font-weight: 600;">&larr; Back to Archives</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

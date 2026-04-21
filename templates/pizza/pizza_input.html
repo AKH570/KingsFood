@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Sale Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/kingsinputdata.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<body>
+    {% include 'pizza/pizzanavbar.html' %}  
+<main class="form-container">
+        <form method="post" action="">
+                 <!-- <h1>Input Sale Data</h1> -->
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.entity.label_tag }}
+                {{ form.entity }}
+            </div>
+            <div class="form-row">
+                {{ form.FMP_sale.label_tag }}
+                {{ form.FMP_sale }}
+            </div>
+            <div class="form-row">
+                {{ form.foodpanda.label_tag }}
+                {{ form.foodpanda }}
+            </div>
+            <div class="form-row">
+                {{ form.create_date.label_tag }}
+                {{ form.create_date }}
+            </div>
+            <button type="submit" style="background-color: #e9bc08; color: #333; border: 1px solid #d4af37; padding: 10px 25px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Save</button>
+        </form>
+    </main>
+</body>
+</html>

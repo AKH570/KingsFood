@@ -1,5 +1,5 @@
 from django import forms
-from .models import saleData, kingsProfitData
+from .models import kingsSale, kingsProfit
 from django.core.exceptions import ValidationError
 from datetime import date
 
@@ -20,7 +20,7 @@ class SaleDataForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'form-input'})
 
     class Meta:
-        model = saleData
+        model = kingsSale
         fields = ['entity', 'FMP_sale', 'foodpanda', 'create_date']
         widgets = {
             'create_date': forms.DateInput(attrs={'type': 'date'}),
@@ -35,7 +35,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from datetime import date
 
-from .models import kingsProfitData
+from .models import kingsProfit
 
 
 class KingsProfitDataForm(forms.ModelForm):
@@ -83,7 +83,7 @@ class KingsProfitDataForm(forms.ModelForm):
 
             # ✅ Duplicate month check (year + month)
             if not self.instance.pk:
-                if kingsProfitData.objects.filter(
+                if kingsProfit.objects.filter(
                     month__year=month.year,
                     month__month=month.month
                 ).exists():
@@ -120,7 +120,7 @@ class KingsProfitDataForm(forms.ModelForm):
         return cleaned_data
 
     class Meta:
-        model = kingsProfitData
+        model = kingsProfit
         fields = [
             'month',
             'totalProfitAmount',

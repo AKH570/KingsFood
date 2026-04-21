@@ -14,9 +14,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
-    {% include 'kings/kingsnavbar.html' %}
-    <h1>King's Sales Report</h1>
-    <h2>For {{ report_date|date:"F Y" }}</h2>
+{% include 'kings/kingsnavbar.html' %}
+    <!-- <h1>King's Sales Report</h1> -->
+    <h2 style="text-align: right; margin: 15px 40px 0 0; color: #7f8c8d; font-size: 1.2rem;"> {{ report_date|date:"F Y" }}</h2>
     <div class="main-container">
         <div class="summary-section">
             <h3>Sales Overview</h3>

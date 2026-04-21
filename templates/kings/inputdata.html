@@ -16,7 +16,7 @@
  {% include 'kings/kingsnavbar.html' %}  
 <main class="form-container">
         <form method="post" action="">
-            <h1>Input Sale Data</h1>
+                 <!-- <h1>Input Sale Data</h1> -->
             {% csrf_token %}
             <div class="form-row">
                 {{ form.entity.label_tag }}
@@ -34,7 +34,7 @@
                 {{ form.create_date.label_tag }}
                 {{ form.create_date }}
             </div>
-            <button type="submit">Save Data</button>
+            <button type="submit">Save</button>
         </form>
     </main>
 </body>

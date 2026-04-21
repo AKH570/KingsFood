@@ -4,7 +4,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
-from kingsapp.models import saleData, ArchivedSaleSummary
+from kingsapp.models import kingsSale, kingsArchvSummary
 
 class Command(BaseCommand):
     """
@@ -48,11 +48,11 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Starting archival process for {target_date.strftime("%B %Y")}...')
 
-        monthly_sales = saleData.objects.filter(create_date__year=year, create_date__month=month)
+        monthly_sales = kingsSale.objects.filter(create_date__year=year, create_date__month=month)
 
         if not monthly_sales.exists():
             # If no sales exist, ensure no archive record exists for it.
-            deleted_count, _ = ArchivedSaleSummary.objects.filter(month__year=year, month__month=month).delete()
+            deleted_count, _ = kingsArchvSummary.objects.filter(month__year=year, month__month=month).delete()
             if deleted_count > 0:
                 self.stdout.write(self.style.WARNING(f'No sales data found for {target_date.strftime("%B %Y")}. Removed existing archive record.'))
             else:
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         average_daily_sale = grand_total / days_with_sales if days_with_sales > 0 else 0
 
         # Use update_or_create to handle both new and existing archive entries
-        obj, created = ArchivedSaleSummary.objects.update_or_create(
+        obj, created = kingsArchvSummary.objects.update_or_create(
             month=date(year, month, 1),
             defaults={
                 'total_fmp_sale': total_fmp,

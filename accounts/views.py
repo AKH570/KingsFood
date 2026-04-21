@@ -7,7 +7,7 @@ from .forms import UserLoginForm
 
 def login(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('welcome')
 
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
@@ -16,7 +16,7 @@ def login(request):
             auth_login(request, user)
             # login(request, user)
             next_url = request.GET.get('next')
-            return redirect(next_url or 'dashboard')
+            return redirect(next_url or 'welcome')
     else:
         form = UserLoginForm()
 

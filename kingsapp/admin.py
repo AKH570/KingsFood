@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import saleData, ArchivedSaleSummary,kingsProfitData
+from .models import kingsSale, kingsArchvSummary, kingsProfit
 
 # Customizing the SaleData admin view
 class SaleDataAdmin(admin.ModelAdmin):
@@ -11,16 +11,16 @@ class SaleDataAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 # Customizing the ArchivedSaleSummary admin view
-class ArchivedSaleSummaryAdmin(admin.ModelAdmin):
+class kingsArchvSummaryAdmin(admin.ModelAdmin):
     list_display = ('month', 'grand_total_sale', 'net_total_sale', 'average_daily_sale')
     ordering = ('-month',)
 
 
 # Register your models here.
-admin.site.register(saleData, SaleDataAdmin)
-admin.site.register(ArchivedSaleSummary, ArchivedSaleSummaryAdmin)
+admin.site.register(kingsSale, SaleDataAdmin)
+admin.site.register(kingsArchvSummary, kingsArchvSummaryAdmin)
 
-@admin.register(kingsProfitData)
+@admin.register(kingsProfit)
 class KingsProfitDataAdmin(admin.ModelAdmin):
     list_display = ('month', 'remarks', 'totalProfitAmount', 'distributionAmount', 'disburseDate', 'status')
     list_filter = ('status', 'month')

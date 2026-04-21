@@ -1,0 +1,80 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/kingsnavbar.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0; /* Removes the default browser gap at the top and sides */
+    }
+    .navbar {
+        background-color: #f8f9fa; /* Matches the page background color from welcome.html */
+        border-bottom: 1px solid rgba(0,0,0,0.05); /* Optional: adds a very subtle separation */
+    }
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        padding: 2px 0;
+        background: transparent;
+    }
+    .navbar-logo {
+        height: 75px; /* Optimized height for navbar visibility */
+        width: auto;
+        transition: transform 0.2s ease-in-out;
+        display: block;
+    }
+    .navbar-logo:hover {
+        transform: scale(1.05); /* Subtle scale effect on hover */
+    }
+    /* Enhanced Font Styling for Navbar Links */
+    .navbar-links li a {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #b80379; /* Change this to your preferred color, e.g., #a71b68 */
+    }
+</style>
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a href="{% url 'pizzapp:pizzaentry' %}" title="Go to Entry Page">
+            <img src="{% static 'images/ovenpizza1.png' %}" alt="" class="navbar-logo">
+        </a>
+    </div>
+    <!-- Hamburger menu button, only visible on mobile -->
+    <!-- <button class="navbar-toggler" id="navbar-toggler" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
+    </button> -->
+    <!-- This div will be collapsed on mobile -->
+    <div class="navbar-collapse" id="navbar-links-container">
+        <ul class="navbar-links">
+            <li><a href="{% url 'pizzapp:pizzaentry' %}">ENTRY PAGE</a></li>
+            <li><a href="{% url 'pizzapp:pizzasales' %}">CURRENT MONTH</a></li>
+            <li><a href="{% url 'pizzapp:show_archive' %}">ARCHIVE</a></li>
+            <!-- <li><a href="{% url 'pizzapp:psd' %}">PSD</a></li> -->
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">LOGOUT</a></li>
+            {% else %}
+            <li>
+                <a href="{% url 'login' %}">LOGIN</a>
+               
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<!-- Simple script to toggle the menu on click -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggler = document.getElementById('navbar-toggler');
+    const navLinksContainer = document.getElementById('navbar-links-container');
+    if (toggler && navLinksContainer) {
+        toggler.addEventListener('click', function() {
+            navLinksContainer.classList.toggle('active');
+        });
+    }
+});
+</script>

@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Kings Confectionery</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f8f9fa; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            gap: 20px; 
+            flex-wrap: wrap;
+        }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 250px; width: 100%; }
+        h1 { color: #2c3e50; margin-top: 0; }
+        p { color: #7f8c8d; line-height: 1.6; margin-bottom: 30px; }
+        .btn { background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background 0.3s ease; display: inline-block; }
+        .btn:hover { background-color: #2980b9; }
+        .btn-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+        .btn-icon { width: 180px; height: auto; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- <h1>Welcome to Business Dashboard!</h1> -->
+        <!-- <p>You have successfully logged in to the Kings Confectionery management system. Click the button below to proceed to the sales data entry dashboard.</p> -->
+        <div class="btn-wrapper">
+            <img src="{% static 'images/kings_2.png' %}" alt="Kings Logo" class="btn-icon">
+            <a href="{% url 'entrypage' %}" class="btn">Enter</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="btn-wrapper">
+            <img src="{% static 'images/ovenpizza1.png' %}" alt="pizza Logo" class="btn-icon">
+            <a href="{% url 'pizzapp:pizzaentry' %}" class="btn">Enter</a>
+        </div>
+    </div>
+</body>
+</html>
