@@ -1,5 +1,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/kingsnavbar.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
 <style>
     body {
@@ -33,6 +34,16 @@
         text-transform: uppercase;
         color: #b80379; /* Change this to your preferred color, e.g., #a71b68 */
     }
+    .switch-btn {
+        margin-right: 15px;
+        color: #e2bf0d; /* Pizza-themed gold color */
+        font-size: 1.6rem;
+        transition: transform 0.2s ease-in-out;
+    }
+    .switch-btn:hover {
+        transform: scale(1.1);
+        color: #d4af37;
+    }
 </style>
 
 <nav class="navbar">
@@ -50,6 +61,9 @@
     <!-- This div will be collapsed on mobile -->
     <div class="navbar-collapse" id="navbar-links-container">
         <ul class="navbar-links">
+            <li><a href="{% url 'pizzapp:pizzaentry' %}" title="Switch to Pizza App" class="switch-btn">
+                <i class="fa-solid fa-pizza-slice"></i>
+            </a></li>
             <li><a href="{% url 'entrypage' %}">ENTRY PAGE</a></li>
             <li><a href="{% url 'showdata' %}">CURRENT MONTH</a></li>
             <li><a href="{% url 'show_archive' %}">ARCHIVE</a></li>
