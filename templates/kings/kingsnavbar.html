@@ -64,10 +64,10 @@
             <li><a href="{% url 'pizzapp:pizzaentry' %}" title="Switch to Pizza App" class="switch-btn">
                 <i class="fa-solid fa-pizza-slice"></i>
             </a></li>
-            <li><a href="{% url 'entrypage' %}">ENTRY PAGE</a></li>
-            <li><a href="{% url 'showdata' %}">CURRENT MONTH</a></li>
+            <li><a href="{% url 'entrypage' %}">SALES ENTRY</a></li>
+            <li><a href="{% url 'showdata' %}">SALES REPORT</a></li>
             <li><a href="{% url 'show_archive' %}">ARCHIVE</a></li>
-            <li><a href="{% url 'psd' %}">PSD</a></li>
+            <li><a href="{% url 'psd' %}">Revenue</a></li>
             {% if user.is_authenticated %}
             <li><a href="{% url 'logout' %}">LOGOUT</a></li>
             {% else %}

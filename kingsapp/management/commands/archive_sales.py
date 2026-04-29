@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand
 from django.db.models import Sum, Count
+from django.db import transaction
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
+from kingsapp.models import kingsSale, kingsArchvSummary, kingsSalesArchv
 
-from kingsapp.models import kingsSale, kingsArchvSummary
-
+# run this command in terminal: python manage.py archive_sales --year 2025 --month 1
 class Command(BaseCommand):
     """
     A Django management command to archive the sales summary for the previous month.
@@ -59,35 +60,51 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'No sales data found for {target_date.strftime("%B %Y")}. No archival needed.'))
             return
 
-        totals = monthly_sales.aggregate(
-            total_fmp=Sum('FMP_sale'),
-            total_foodpanda=Sum('foodpanda'),
-            count=Count('id')
-        )
+        with transaction.atomic():
+            totals = monthly_sales.aggregate(
+                total_fmp=Sum('FMP_sale'),
+                total_foodpanda=Sum('foodpanda'),
+                count=Count('id')
+            )
 
-        total_fmp = totals['total_fmp'] or 0
-        total_foodpanda_gross = totals['total_foodpanda'] or 0
-        commission_rate = Decimal('0.2022')
-        foodpanda_commission = total_foodpanda_gross * commission_rate
-        total_foodpanda_net = total_foodpanda_gross - foodpanda_commission
-        grand_total = total_fmp + total_foodpanda_gross
-        net_total_sale = total_fmp + total_foodpanda_net
+            total_fmp = totals['total_fmp'] or 0
+            total_foodpanda_gross = totals['total_foodpanda'] or 0
+            commission_rate = Decimal('0.2022')
+            foodpanda_commission = total_foodpanda_gross * commission_rate
+            total_foodpanda_net = total_foodpanda_gross - foodpanda_commission
+            grand_total = total_fmp + total_foodpanda_gross
+            net_total_sale = total_fmp + total_foodpanda_net
 
-        # Calculate the number of unique days with sales to get a true daily average
-        days_with_sales = monthly_sales.values('create_date').distinct().count()
-        average_daily_sale = grand_total / days_with_sales if days_with_sales > 0 else 0
+            # Calculate the number of unique days with sales to get a true daily average
+            days_with_sales = monthly_sales.values('create_date').distinct().count()
+            average_daily_sale = grand_total / days_with_sales if days_with_sales > 0 else 0
 
-        # Use update_or_create to handle both new and existing archive entries
-        obj, created = kingsArchvSummary.objects.update_or_create(
-            month=date(year, month, 1),
-            defaults={
-                'total_fmp_sale': total_fmp,
-                'total_foodpanda_sale': total_foodpanda_gross,
-                'grand_total_sale': grand_total,
-                'net_total_sale': net_total_sale,
-                'average_daily_sale': average_daily_sale
-            }
-        )
+            # Use update_or_create to handle both new and existing archive entries
+            obj, created = kingsArchvSummary.objects.update_or_create(
+                month=date(year, month, 1),
+                defaults={
+                    'total_fmp_sale': total_fmp,
+                    'total_foodpanda_sale': total_foodpanda_gross,
+                    'grand_total_sale': grand_total,
+                    'net_total_sale': net_total_sale,
+                    'average_daily_sale': average_daily_sale
+                }
+            )
+
+            # Replication process: Move detailed records to Archive model
+            archived_records = [
+                kingsSalesArchv(
+                    entity=sale.entity,
+                    FMP_sale=sale.FMP_sale,
+                    foodpanda=sale.foodpanda,
+                    create_date=sale.create_date,
+                ) for sale in monthly_sales
+            ]
+            kingsSalesArchv.objects.bulk_create(archived_records)
+
+            # Delete original records from the live table
+            moved_count, _ = monthly_sales.delete()
+            self.stdout.write(self.style.SUCCESS(f'Moved {moved_count} detailed records to {kingsSalesArchv._meta.verbose_name}.'))
 
         if created:
             self.stdout.write(self.style.SUCCESS(f'Successfully created archive for {target_date.strftime("%B %Y")}.'))

@@ -3,7 +3,7 @@ from .models import PizzaSale, PizzaProfitData
 
 @admin.register(PizzaSale)
 class PizzaSaleAdmin(admin.ModelAdmin):
-    list_display = ('entity', 'create_date', 'FMP_sale', 'foodpanda')
+    list_display = ('entity', 'create_date', 'pizza_sale', 'fp_sale')
     list_filter = ('create_date', 'entity')
 
 @admin.register(PizzaProfitData)

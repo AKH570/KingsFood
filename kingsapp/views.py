@@ -7,13 +7,14 @@ from django.views.decorators.csrf import csrf_exempt
 from .forms import SaleDataForm, KingsProfitDataForm
 from django.db.models import Sum, Count, Avg, F
 from django.utils import timezone
-from .models import kingsSale, kingsArchvSummary, kingsProfit
+from .models import kingsSale, kingsArchvSummary, kingsProfit, kingsSalesArchv
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from django.db.models.functions import TruncMonth
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 import json
+import calendar
 
 # Create your views here.
 
@@ -41,12 +42,19 @@ def get_day_sales(target_date):
     """
     Helper function to get sales for a specific day
     """
-    day_sales = kingsSale.objects.filter(
+    today = date.today()
+    if target_date.year == today.year and target_date.month == today.month:
+        # Query live sales for the current month
+        model_to_query = kingsSale
+    else:
+        # Query archived sales for past months
+        model_to_query = kingsSalesArchv
+
+    day_sales = model_to_query.objects.filter(
         create_date=target_date
     ).aggregate(
         total_sale=Sum(F('FMP_sale') + F('foodpanda'))
     )['total_sale'] or Decimal('0.00')
-    
     return {
         'date': target_date,
         'total_sale': day_sales
@@ -63,6 +71,14 @@ def get_previous_month_day(current_date):
     if current_date.day > prev_month_last_day.day:
         return prev_month_last_day
     return prev_month_last_day.replace(day=current_date.day)
+
+def calculate_monthly_projection(average_sale, report_date):
+    """
+    Calculates the projected total sales for the month based on the daily average.
+    """
+    _, total_days = calendar.monthrange(report_date.year, report_date.month)
+    projection = Decimal(average_sale) * Decimal(total_days)
+    return projection.quantize(Decimal('0.01'))
 
 @login_required(login_url='login')
 def showData(request):
@@ -90,7 +106,7 @@ def showData(request):
 	total_foodpanda_gross = totals['total_foodpanda'] or 0
 
 	# Calculate Foodpanda commission and net sale
-	commission_rate = Decimal('0.2022')
+	commission_rate = Decimal('0.22')
 	foodpanda_commission = total_foodpanda_gross * commission_rate
 	total_foodpanda_net = total_foodpanda_gross - foodpanda_commission
 
@@ -104,66 +120,47 @@ def showData(request):
 	if sale_count > 0:
 		average_sale = grand_total / sale_count
 
+	# Calculate the monthly projection
+	projected_grand_total = calculate_monthly_projection(average_sale, report_date)
+
 	# Get the most recent sale entry to find the last updated date
 	last_entry = kingsSale.objects.order_by('-create_date').first()
 	last_updated_date = last_entry.create_date if last_entry else None
 
-	# --- Monthly Average Sale for Chart ---
-	monthly_chart_data = kingsSale.objects.filter(
-		create_date__year=today.year
-	).annotate(
-		month=TruncMonth('create_date')
-	).values(
-		'month'
-	).annotate(
-		avg_sale=Avg(F('FMP_sale') + F('foodpanda'))
-	).order_by('month')
-
-	# Format data for Chart.js
-	chart_labels = [data['month'].strftime('%b') for data in monthly_chart_data]
-	chart_data = [float(data['avg_sale']) for data in monthly_chart_data]
-	# Create a dictionary of existing sales data for easy lookup
-	sales_by_month = {data['month'].month: float(data['avg_sale']) for data in monthly_chart_data}
-
-	# Generate labels and data for all months up to the current month
-	chart_labels = []
-	chart_data = []
-	current_month_num = today.month
-
-	for month_num in range(1, current_month_num + 1):
-		month_name = date(today.year, month_num, 1).strftime('%b %Y')
-		chart_labels.append(month_name)
-		# Use the sales data if it exists, otherwise default to 0
-		chart_data.append(sales_by_month.get(month_num, 0))
-
-	# --- Data for Monthly Grand Total and Foodpanda Total Chart ---
-	monthly_totals_raw = kingsSale.objects.filter(
-		create_date__year=today.year
-	).annotate(
-		month=TruncMonth('create_date')
-	).values(
-		'month'
-	).annotate(
-		grand_total=Sum(F('FMP_sale') + F('foodpanda')),
-		foodpanda_total=Sum('foodpanda')
-	).order_by('month')
-
-	# Create a dictionary for easy lookup
-	sales_by_month_totals = {
-		data['month'].month: {
-			'grand_total': float(data['grand_total'] or 0),
-			'foodpanda_total': float(data['foodpanda_total'] or 0)
-		} for data in monthly_totals_raw
+	# --- Prepare Chart Data (Merging Archive and Live Data) ---
+	# Fetch archived summaries for the year of report_date
+	archived_summaries = kingsArchvSummary.objects.filter(month__year=report_date.year)
+	
+	# Create lookups for archived data
+	archived_avgs = {s.month.month: float(s.average_daily_sale) for s in archived_summaries}
+	archived_totals = {
+		s.month.month: {
+			'grand_total': float(s.grand_total_sale),
+			'foodpanda_total': float(s.total_foodpanda_sale)
+		} for s in archived_summaries
 	}
 
-	# Generate data for all months up to the current month
+	chart_labels = []
+	chart_data = []
 	monthly_grand_total_data = []
 	monthly_foodpanda_total_data = []
 
-	for month_num in range(1, current_month_num + 1):
-		month_data = sales_by_month_totals.get(month_num, {'grand_total': 0, 'foodpanda_total': 0})
-		monthly_grand_total_data.append(month_data['grand_total'])
-		monthly_foodpanda_total_data.append(month_data['foodpanda_total'])
+	# Iterate through months up to report_date.month
+	for month_num in range(1, report_date.month + 1):
+		month_name = date(report_date.year, month_num, 1).strftime('%b %Y')
+		chart_labels.append(month_name)
+		
+		if month_num == report_date.month:
+			# Current live month data (calculated above)
+			chart_data.append(float(average_sale))
+			monthly_grand_total_data.append(float(grand_total))
+			monthly_foodpanda_total_data.append(float(total_foodpanda_gross))
+		else:
+			# Archived month data
+			chart_data.append(archived_avgs.get(month_num, 0.0))
+			m_data = archived_totals.get(month_num, {'grand_total': 0.0, 'foodpanda_total': 0.0})
+			monthly_grand_total_data.append(m_data['grand_total'])
+			monthly_foodpanda_total_data.append(m_data['foodpanda_total'])
 
 	# Get current day sales
 	current_day_sales = get_day_sales(report_date)
@@ -182,6 +179,7 @@ def showData(request):
 		'grand_total_sale': grand_total,
 		'average_sale': average_sale,
 		'net_total_sale': net_total_sale,
+		'projected_grand_total': projected_grand_total,
 		'last_updated_date': last_updated_date,
 		'chart_labels': chart_labels,
 		'chart_data': chart_data,
@@ -254,7 +252,7 @@ def profitDistribution(request):
 @login_required(login_url='login')
 def month_view_sale(request, pk):
     arcv_month = get_object_or_404(kingsArchvSummary, pk=pk)
-    daily_sales = kingsSale.objects.filter(
+    daily_sales = kingsSalesArchv.objects.filter(
         create_date__year=arcv_month.month.year,
         create_date__month=arcv_month.month.month
     ).order_by('create_date')

@@ -13,21 +13,21 @@ class pizzaSaleDataForm(forms.ModelForm):
 
         # Remove the default '0' from the form fields for a cleaner UI
         if not self.instance.pk:
-            self.initial['FMP_sale'] = ''
-            self.initial['foodpanda'] = ''
+            self.initial['pizza_sale'] = ''
+            self.initial['fp_sale'] = ''
 
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-input'})
 
     class Meta:
         model = PizzaSale
-        fields = ['entity', 'FMP_sale', 'foodpanda', 'create_date']
+        fields = ['entity', 'pizza_sale', 'fp_sale', 'create_date']
         widgets = {
             'create_date': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
-            'FMP_sale': 'Net Sale',
-            'foodpanda': 'Fpanda Sale',
+            'pizza_sale': 'Net Sale',
+            'fp_sale': 'Fpanda Sale',
         }
 
 

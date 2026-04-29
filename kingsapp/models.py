@@ -13,7 +13,7 @@ class kingsSale(models.Model):
         return self.FMP_sale + self.foodpanda
 
     def __str__(self):
-        return self.entity
+        return str(self.create_date)
 
     class Meta:
         verbose_name = 'Kings Sale'
@@ -59,3 +59,19 @@ class kingsProfit(models.Model):
     class Meta:
         verbose_name = 'Kings Profit'
         verbose_name_plural = 'Kings Profit'
+
+class kingsSalesArchv(models.Model):
+    entity = models.CharField(max_length=100)
+    FMP_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    foodpanda = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    create_date = models.DateField()
+    update_date = models.DateTimeField(auto_now=True)
+
+    @property
+    def total_sale(self):
+        return self.FMP_sale + self.foodpanda
+    def __str__(self):
+        return str(self.create_date)
+    class Meta:
+        verbose_name = 'Kings Sale Archive'
+        verbose_name_plural = 'Kings Sale Archive'

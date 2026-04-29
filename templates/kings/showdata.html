@@ -5,21 +5,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Data</title>
+    <title>Sales Report</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/kingshowdata.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        @keyframes blink-animation {
+            0% { opacity: 1; color: inherit; }
+            50% { opacity: 0.5; color: red; }
+            100% { opacity: 1; color: inherit; }
+        }
+        .blink {
+            animation: blink-animation 1.5s ease-in-out infinite;
+        }
+    </style>
 </head>
 <body>
 {% include 'kings/kingsnavbar.html' %}
     <!-- <h1>King's Sales Report</h1> -->
-    <h2 style="text-align: right; margin: 15px 40px 0 0; color: #7f8c8d; font-size: 1.2rem;"> {{ report_date|date:"F Y" }}</h2>
+    <h2 style="text-align:center; margin: 15px 40px 0 0; color: #cd0c9a; font-size: 1.2rem;"> {{ report_date|date:"F Y" }}</h2>
     <div class="main-container">
         <div class="summary-section">
             <h3>Sales Overview</h3>
+            <!-- <span class="summary-value">{{ last_updated_date|date:"d-M-Y"|default:"N/A" }}</span> -->
             <div class="summary-item">
                 <span class="summary-label">Total FMP Sale</span>
                 <span class="summary-value">{{ total_fmp_sale|floatformat:2|default:"0.00" }}</span>
@@ -29,7 +40,7 @@
                 <span class="summary-value">{{ total_foodpanda_sale|floatformat:2|default:"0.00" }}</span>
             </div>
             <div class="summary-item">
-                <span class="summary-label">Foodpanda Net (After 20.22%)</span>
+                <span class="summary-label">Foodpanda Net (After 22.00%)</span>
                 <span class="summary-value">{{ foodpanda_net_sale|floatformat:2|default:"0.00" }}</span>
             </div>
             <div class="summary-item">
@@ -43,6 +54,10 @@
             <div class="summary-item total">
                 <span class="summary-label">Net Total</span>
                 <span class="summary-value">{{ net_total_sale|floatformat:2|default:"0.00" }}</span>
+            </div>
+            <div class="summary-item total blink">
+                <span class="summary-label">Projection of Grand Total</span>
+                <span class="summary-value">{{ projected_grand_total|floatformat:2|default:"0.00" }}</span>
             </div>
             <div class="summary-item">
                 <span class="summary-label">Last Updated</span>
