@@ -7,7 +7,7 @@ class pizzaSaleDataForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Set a fixed initial value for the entity and make it read-only
-        self.initial['entity'] = 'Kings Confectionery'
+        self.initial['entity'] = 'Oven Pizza & Turkish Food'
         self.fields['entity'].widget.attrs['readonly'] = True
         self.fields['entity'].label = "Entity Name"
 
@@ -26,7 +26,7 @@ class pizzaSaleDataForm(forms.ModelForm):
             'create_date': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
-            'pizza_sale': 'Net Sale',
+            'pizza_sale': 'Cash Sale',
             'fp_sale': 'Fpanda Sale',
         }
 

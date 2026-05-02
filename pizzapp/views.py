@@ -28,19 +28,19 @@ def showdata(request):
     today = date.today()
     queryset = PizzaSale.objects.filter(create_date__month=today.month, create_date__year=today.year).order_by('create_date')
     
-    total_fmp = queryset.aggregate(Sum('FMP_sale'))['FMP_sale__sum'] or 0
-    total_fp = queryset.aggregate(Sum('foodpanda'))['foodpanda__sum'] or 0
+    total_fmp = queryset.aggregate(Sum('pizza_sale'))['pizza_sale__sum'] or 0
+    total_fp = queryset.aggregate(Sum('fp_sale'))['fp_sale__sum'] or 0
     fp_net = float(total_fp) * 0.7978  # Deducting 20.22%
     
     grand_total = float(total_fmp) + float(total_fp)
     net_total = float(total_fmp) + fp_net
-    avg_sale = queryset.aggregate(Avg('FMP_sale'))['FMP_sale__avg'] or 0 # Example calc
+    avg_sale = queryset.aggregate(Avg('pizza_sale'))['pizza_sale__avg'] or 0 # Example calc
 
     current_day = queryset.last()
     current_day_total = 0
     if current_day:
         # Calculate daily total if total_sale property isn't defined on the model
-        current_day_total = float(current_day.FMP_sale or 0) + float(current_day.foodpanda or 0)
+        current_day_total = float(current_day.pizza_sale or 0) + float(current_day.fp_sale or 0)
     
     prev_month_total = 0 # Placeholder value
 
@@ -54,7 +54,7 @@ def showdata(request):
         'average_sale': avg_sale,
         'report_date': today,
         'chart_labels': [d.create_date.strftime('%d') for d in queryset],
-        'chart_data': [float(d.FMP_sale) for d in queryset],
+        'chart_data': [float(d.pizza_sale) for d in queryset],
         'monthly_grand_total_data': [float(total_fmp)],
         'monthly_foodpanda_total_data': [float(total_fp)],
         'current_day_sales': current_day,
