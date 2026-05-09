@@ -1,0 +1,28 @@
+.login-info-box {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 450px;
+    font-family: Arial, sans-serif;
+}
+
+.login-info-box h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.login-info-box p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.login-info-box ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.login-info-box li {
+    margin-bottom: 8px;
+    color: #444;
+}

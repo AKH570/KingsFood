@@ -9,25 +9,74 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/kingsinputdata.css' %}">
+     <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                flex-direction: column !important;
+                padding: 1.5rem !important;
+            }
+            .info-column {
+                padding-right: 0 !important;
+                justify-content: center !important;
+                flex: none !important;
+                margin-bottom: 2rem;
+            }
+            .spacer-column {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
-<body>
-    <main class="form-container" style="margin-top: 100px;">
-        <form method="post">
-            <h1>Login</h1>
-            {% csrf_token %}
-            {% if form.errors %}
-                <p style="color: red; text-align: center;">Invalid username or password.</p>
-            {% endif %}
-            <div class="form-row">
-                {{ form.username.label_tag }}
-                {{ form.username }}
+<body style="display: flex; flex-direction: column; min-height: 100vh; background-color: #f4f7f6; margin: 0;">
+    <div class="main-content-wrapper" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; width: 100%; box-sizing: border-box;">
+        <!-- Left Spacer: Pushes the form to center and holds the info box -->
+        <div class="info-column" style="flex: 1; display: flex; justify-content: flex-end; padding-right: 2rem;">
+            <div class="login-info-box">
+                <h3>Welcome Back!</h3>
+                
+                <p>
+                    Please log in using the credentials shared with you.
+                </p>
+
+                <p>
+                    After successful login, you will be able to access:
+                </p>
+
+                <ul>
+                    <li>Daily Sales of current month</li>
+                    <li>Sales History</li>
+                    <li>Grand Total</li>
+                    <li>Average Sales</li>
+                    <li>Revenue Reports</li>
+                </ul>
             </div>
-            <div class="form-row">
-                {{ form.password.label_tag }}
-                {{ form.password }}
-            </div>
-            <button type="submit">Sign In</button>
-        </form>
-    </main>
+        </div>
+
+        <main class="form-container">
+            <form method="post">
+                <h1>Login</h1>
+                {% csrf_token %}
+                {% if form.errors %}
+                    <p style="color: red; text-align: center;">Invalid username or password.</p>
+                {% endif %}
+                <div class="form-row">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="form-row">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+        </main>
+
+        <!-- Right Spacer: Balances the left side to keep the form centered -->
+        <div class="spacer-column" style="flex: 1;"></div>
+    </div>
+    <footer style="text-align: center; padding: 1.5rem; width: 100%; color: #666;">
+        <p>Designed and Developed by <strong>Md Abir Hossain Khandokar</strong></p>
+    </footer>
 </body>
 </html>
